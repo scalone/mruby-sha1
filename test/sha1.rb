@@ -11,6 +11,6 @@ assert('SHA1 class inside of Digest') do
 end
 
 assert('SHA1 operation inside of Digest') do
-  Digest::SHA1.hexdigest('ruby') == '18e40e1401eef67e1ae69efab09afb71'
+  Digest::SHA1.hexdigest('ruby') == '18e40e1401eef67e1ae69efab09afb71f87ffb81'
 end
 
