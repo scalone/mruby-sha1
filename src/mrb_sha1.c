@@ -42,6 +42,26 @@ mrb_sha1_hex(mrb_state *mrb, mrb_value self)
   return mrb_str_new(mrb, (char*) digest_hex, 40);
 }
 
+static mrb_value
+mrb_sha1(mrb_state *mrb, mrb_value self)
+{
+  unsigned char digest[20];
+  mrb_value arg = mrb_nil_value();
+  int i;
+
+  mrb_get_args(mrb, "o", &arg);
+  if (mrb_nil_p(arg) || mrb_type(arg) != MRB_TT_STRING) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid argument");
+  }
+
+  struct sha1_context ctx;
+  sha1_starts(&ctx);
+  sha1_update(&ctx, (uint8*) RSTRING_PTR(arg), RSTRING_LEN(arg));
+  sha1_finish(&ctx, (uint8*)&digest[0]);
+
+  return mrb_str_new(mrb, (char*) digest, 20);
+}
+
 /*********************************************************
  * register
  *********************************************************/
@@ -50,6 +70,7 @@ void
 mrb_mruby_sha1_gem_init(mrb_state* mrb) {
   struct RClass *_class_sha1 = mrb_define_module(mrb, "SHA1");
   mrb_define_class_method(mrb, _class_sha1, "sha1_hex", mrb_sha1_hex, ARGS_REQ(1));
+  mrb_define_class_method(mrb, _class_sha1, "digest", mrb_sha1, ARGS_REQ(1));
 }
 
 void
